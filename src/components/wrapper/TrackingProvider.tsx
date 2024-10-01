@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useTrackEvent } from "@/lib/hooks/useTrackEvent";
 
 const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -26,15 +26,18 @@ const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [handleRouteChangeStart, router.events]);
 
   const hasTrackedVisit = useRef(false);
+  const [currentRoute, setCurrentRoute] = useState("/");
 
   useEffect(() => {
     if (!hasTrackedVisit.current) {
       trackEvent("visit_page", router.asPath);
+      setCurrentRoute(router.asPath);
       hasTrackedVisit.current = true;
     }
     const handleRouteChange = (url: string) => {
-      if (url !== router.asPath) {
+      if (url !== currentRoute) {
         trackEvent("visit_page", url);
+        setCurrentRoute(url);
       }
     };
 
@@ -43,7 +46,7 @@ const TrackingProvider: React.FC<{ children: React.ReactNode }> = ({
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange);
     };
-  }, [trackEvent, router.events, router.asPath]);
+  }, [trackEvent, router.events, router.asPath, currentRoute]);
 
   return <>{children}</>;
 };

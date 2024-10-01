@@ -10,11 +10,11 @@ ApiReq.interceptors.request.use((config) => {
 
 ApiReq.interceptors.response.use(
   (res: AxiosResponse) => {
-    console.log("res", res);
+    // console.log("res", res);
     return res;
   },
   async (error: AxiosError) => {
-    console.log("error", error);
+    // console.log("error", error);
 
     return Promise.reject(error);
   }
